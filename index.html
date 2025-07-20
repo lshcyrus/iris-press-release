@@ -1,4 +1,4 @@
-<![CDATA[<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -62,37 +62,66 @@
 
     <script>
         async function fetchAndRenderData() {
-            const sheetId = 'YOUR_SHEET_ID_HERE'; // Replace with your Google Sheet ID
-            const sheetName = 'Sheet1'; // Replace with your sheet name if different
+            const sheetId = '1Tz0Sn3QZ-rEd192Xj1DZ95jcIaGNvVC4';
+            const sheetName = 'Sheet1';
             const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
 
             try {
                 const response = await fetch(url);
                 const text = await response.text();
-                // Parse the Google Sheets response
-                const jsonString = text.replace(/.*google.visualization.Query.setResponse\(([\s\S]*)\);?/, '$1');
+                // Robust parsing: Remove prefix up to the first '(', and suffix after the last ')' 
+                const start = text.indexOf('(');
+                const end = text.lastIndexOf(')');
+                const jsonString = text.substring(start + 1, end);
                 const json = JSON.parse(jsonString);
 
                 const rows = json.table.rows;
 
-                // Assume first row is headers: Date, Media, Title, Link
-                let data = rows.slice(1).map(row => ({
+                // Map all rows, but skip likely header rows
+                let data = rows.map(row => ({
                     date: row.c[0]?.v || '',
                     media: row.c[1]?.v || '',
                     title: row.c[2]?.v || '',
                     link: row.c[3]?.v || ''
                 }));
 
-                // Filter out empty rows
-                data = data.filter(item => item.date && item.media && item.title && item.link);
+                // Filter out header-like rows (e.g., if date is 'Date')
+                data = data.filter(item => item.date && item.date !== 'Date' && item.media && item.title && item.link);
 
-                // Sort by date descending
-                data.sort((a, b) => new Date(b.date) - new Date(a.date));
+                // Parse and format dates
+                data = data.map(item => {
+                    let parsedDate = null;
+                    let dateFormatted = item.date; // Fallback to raw
+                    if (typeof item.date === 'string') {
+                        if (item.date.startsWith('Date(')) {
+                            const matches = item.date.match(/Date\((\d+),(\d+),(\d+)\)/);
+                            if (matches) {
+                                const year = parseInt(matches[1]);
+                                const month = parseInt(matches[2]) + 1;
+                                const day = parseInt(matches[3]);
+                                parsedDate = new Date(year, month - 1, day);
+                                dateFormatted = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            }
+                        } else {
+                            parsedDate = new Date(item.date);
+                            if (!isNaN(parsedDate)) {
+                                dateFormatted = parsedDate.toISOString().split('T')[0]; // YYYY-MM-DD
+                            }
+                        }
+                    }
+                    return { ...item, parsedDate, dateFormatted };
+                });
+
+                // Filter only rows with valid parsed dates
+                data = data.filter(item => item.parsedDate && !isNaN(item.parsedDate));
+
+                // Sort by parsedDate descending
+                data.sort((a, b) => b.parsedDate - a.parsedDate);
 
                 // Group by year
                 const groups = {};
                 data.forEach(item => {
-                    const year = new Date(item.date).getFullYear();
+                    const year = new Date(item.parsedDate).getFullYear();
                     if (!groups[year]) groups[year] = [];
                     groups[year].push(item);
                 });
@@ -102,7 +131,7 @@
                     tbody.innerHTML += `<tr><td colspan="3" class="year-header" style="background-color:#eef; font-weight:bold; text-align:left;">${year}</td></tr>`;
                     groups[year].forEach(item => {
                         tbody.innerHTML += `<tr>
-                            <td data-label="Date" style="width: 120px; min-width: 120px;">${item.date}</td>
+                            <td data-label="Date" style="width: 120px; min-width: 120px;">${item.dateFormatted}</td>
                             <td data-label="Media" style="width: 150px;">${item.media}</td>
                             <td data-label="Title"><a href="${item.link}" target="_blank">${item.title}</a></td>
                         </tr>`;
@@ -117,4 +146,4 @@
         fetchAndRenderData();
     </script>
 </body>
-</html>]]> 
+</html>
