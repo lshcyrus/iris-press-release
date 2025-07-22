@@ -152,6 +152,15 @@
                     }
                 });
 
+                // Adjust the Elementor widget height dynamically after rendering
+                setTimeout(() => {
+                    const contentHeight = container.scrollHeight;
+                    const widgetContainer = container.closest('.elementor-widget-container');
+                    if (widgetContainer) {
+                        widgetContainer.style.height = `${contentHeight}px`;
+                    }
+                }, 0);
+
                 // If no data for requested year, show message
                 if (requestedYear && !groups[requestedYear]) {
                     container.innerHTML = '<p>No data available for the requested year.</p>';
