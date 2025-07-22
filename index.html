@@ -190,16 +190,22 @@
                 }
 
                 // Force height recalculation after content is loaded (for WordPress/Elementor)
-                setTimeout(() => {
+                const targetOrigin = 'https://group-iris.com';
+
+                function attemptToSendHeight() {
                     // Add a small buffer to the height for safety
                     const newHeight = document.body.scrollHeight + 15;
-                    console.log('Attempting to post height:', newHeight); // Debugging line
-                    
-                    // This is required for security.
-                    const targetOrigin = 'https://group-iris.com';
+                    if (newHeight > 15) { // Only send if height is calculated
+                        console.log('Attempting to post height:', newHeight, 'to', targetOrigin);
+                        parent.postMessage({iframeHeight: newHeight}, targetOrigin);
+                    }
+                }
 
-                    parent.postMessage({iframeHeight: newHeight}, targetOrigin);
-                }, 200);
+                // Send height at different intervals to handle parent page load timing
+                setTimeout(attemptToSendHeight, 200);
+                setTimeout(attemptToSendHeight, 500);
+                setTimeout(attemptToSendHeight, 1000);
+                setTimeout(attemptToSendHeight, 2000);
 
             } catch (error) {
                 console.error('Error fetching data:', error);
