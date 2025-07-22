@@ -194,7 +194,11 @@
                     // Add a small buffer to the height for safety
                     const newHeight = document.body.scrollHeight + 15;
                     console.log('Attempting to post height:', newHeight); // Debugging line
-                    parent.postMessage({iframeHeight: newHeight}, '*');
+                    
+                    // This is required for security.
+                    const targetOrigin = 'https://group-iris.com';
+
+                    parent.postMessage({iframeHeight: newHeight}, targetOrigin);
                 }, 200);
 
             } catch (error) {
