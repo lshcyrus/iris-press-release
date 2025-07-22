@@ -59,7 +59,7 @@
         /* Date column styling */
         .responsive-table td:first-child {
             font-weight: 600;
-            color: #6b7280;
+            color: #12617f;
             font-size: 14px;
         }
         
@@ -73,7 +73,6 @@
         @media screen and (max-width: 1024px) {
           .responsive-table { font-size: 15px; }
           .responsive-table td { padding: 7px; }
-
           html, body {
             overflow-y: visible !important;
           }
@@ -88,7 +87,7 @@
           .responsive-table tr { border-radius: 12px; display: block; margin-bottom: 20px; padding: 20px; background: linear-gradient(145deg, #ffffff, #f8f9fa); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1); border: 1px solid #e5e7eb; }
           .responsive-table td { border: none; display: block; padding: 8px 0; text-align: left; margin-bottom: 12px; }
           .responsive-table td:before { content: attr(data-label) ": "; font-weight: 700; display: inline-block; width: 70px; margin-right: 8px; color: #374151; vertical-align: top; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-          .responsive-table td[data-label="Date"] { white-space: nowrap; font-size: 13px; color: #6b7280; font-weight: 600; }
+          .responsive-table td[data-label="Date"] { white-space: nowrap; font-size: 13px; font-weight: 600; }
           .responsive-table td[data-label="Media"] { font-size: 13px; word-wrap: break-word; margin-left: 78px; text-indent: -78px; color: #374151; font-weight: 500; }
           .responsive-table td[data-label="Title"] { word-wrap: break-word; line-height: 1.4; font-size: 14px; margin-left: 78px; text-indent: -78px; }
           .responsive-table .year-header { background-color: #007cba !important; color: white !important; text-align: center; font-size: 16px; padding: 12px !important; margin-bottom: 15px; border-radius: 8px; }
@@ -177,12 +176,15 @@
                                 const month = parseInt(matches[2]) + 1;
                                 const day = parseInt(matches[3]);
                                 parsedDate = new Date(year, month - 1, day);
-                                dateFormatted = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                dateFormatted = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
                             }
                         } else {
                             parsedDate = new Date(item.date);
                             if (!isNaN(parsedDate)) {
-                                dateFormatted = parsedDate.toISOString().split('T')[0]; // YYYY-MM-DD
+                                const day = parsedDate.getDate();
+                                const month = parsedDate.getMonth() + 1;
+                                const year = parsedDate.getFullYear();
+                                dateFormatted = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
                             }
                         }
                     }
