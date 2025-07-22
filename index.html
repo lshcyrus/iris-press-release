@@ -39,8 +39,8 @@
         }
 
         /* Base font sizes for desktop */
-        .responsive-table { font-size: 16px; margin-bottom: 20px; }
-        .responsive-table td { padding: 8px; vertical-align: top; }
+        .responsive-table { font-size: 16px;}
+        .responsive-table td { padding: 0 10px 10px 10px; vertical-align: middle; }
 
         /* Tablet sizes (768px - 1024px) */
         @media screen and (max-width: 1024px) {
@@ -53,7 +53,7 @@
           .responsive-table { font-size: 14px; }
           .responsive-table table { border: 0; }
           .responsive-table thead { border: none; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
-          .responsive-table tr { border-radius: 8px; display: block; margin-bottom: 15px; padding: 12px; background: #f9f9f9; }
+          .responsive-table tr { border-radius: 8px; display: block; margin-bottom: 10px; padding: 12px; background: #f9f9f9; }
           .responsive-table td { border: none; display: block; padding: 6px 0; text-align: left; }
           .responsive-table td:before { content: attr(data-label) ": "; font-weight: bold; display: inline-block; width: 70px; margin-right: 8px; color: #333; vertical-align: top; font-size: 13px; }
           .responsive-table td[data-label="Date"] { white-space: nowrap; font-size: 13px; }
@@ -168,7 +168,7 @@
                     if (groups[year]) {
                         let tableHTML = `
                             <div class="responsive-table">
-                                <table border="0" cellspacing="0" cellpadding="5" style="border-collapse:collapse;width:100%;">
+                                <table border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;width:100%;">
                                     <tbody>
                         `;
                         groups[year].forEach(item => {
