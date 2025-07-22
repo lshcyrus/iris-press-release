@@ -191,10 +191,10 @@
 
                 // Force height recalculation after content is loaded (for WordPress/Elementor)
                 setTimeout(() => {
-                    window.onload = function() {
-                        parent.postMessage({iframeHeight: document.body.scrollHeight}, '*');
-                      };
-                }, 100);
+                    // Add a small buffer to the height for safety
+                    const newHeight = document.body.scrollHeight + 15;
+                    parent.postMessage({iframeHeight: newHeight}, '*');
+                }, 200);
 
             } catch (error) {
                 console.error('Error fetching data:', error);
