@@ -6,7 +6,7 @@
     <title>Media Coverage Web App</title>
     <style>
         /* Base font sizes for desktop */
-        .responsive-table { font-size: 16px; }
+        .responsive-table { font-size: 16px; margin-bottom: 20px; } /* Added margin between tables */
         .responsive-table td { padding: 8px; vertical-align: top; }
 
         /* Tablet sizes (768px - 1024px) */
@@ -54,11 +54,7 @@
     </style>
 </head>
 <body>
-    <div class="responsive-table" style="overflow-x: auto;">
-        <table id="data-table" border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;width:100%;">
-            <tbody></tbody>
-        </table>
-    </div>
+    <div id="tables-container" style="overflow-x: auto;"></div>
 
     <script>
         async function fetchAndRenderData() {
@@ -66,10 +62,14 @@
             const sheetName = 'Sheet1';
             const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
 
+            // Get URL parameter for specific year (e.g., ?year=2025)
+            const params = new URLSearchParams(window.location.search);
+            const requestedYear = params.get('year') ? parseInt(params.get('year')) : null;
+
             try {
                 const response = await fetch(url);
                 const text = await response.text();
-                // Robust parsing: Remove prefix up to the first '(', and suffix after the last ')' 
+                // Robust parsing: Remove prefix up to the first '(', and suffix after the last ')'
                 const start = text.indexOf('(');
                 const end = text.lastIndexOf(')');
                 const jsonString = text.substring(start + 1, end);
@@ -121,25 +121,47 @@
                 // Group by year
                 const groups = {};
                 data.forEach(item => {
-                    const year = new Date(item.parsedDate).getFullYear();
+                    const year = item.parsedDate.getFullYear();
                     if (!groups[year]) groups[year] = [];
                     groups[year].push(item);
                 });
 
-                const tbody = document.querySelector('#data-table tbody');
-                Object.keys(groups).sort((a, b) => b - a).forEach(year => {
-                    tbody.innerHTML += `<tr><td colspan="3" class="year-header" style="background-color:#eef; font-weight:bold; text-align:left;">${year}</td></tr>`;
-                    groups[year].forEach(item => {
-                        tbody.innerHTML += `<tr>
-                            <td data-label="Date" style="width: 120px; min-width: 120px;">${item.dateFormatted}</td>
-                            <td data-label="Media" style="width: 150px;">${item.media}</td>
-                            <td data-label="Title"><a href="${item.link}" target="_blank">${item.title}</a></td>
-                        </tr>`;
-                    });
+                const container = document.getElementById('tables-container');
+
+                // If a specific year is requested, show only that year's table
+                let yearsToShow = requestedYear ? [requestedYear] : Object.keys(groups).sort((a, b) => b - a);
+
+                yearsToShow.forEach(year => {
+                    if (groups[year]) {
+                        let tableHTML = `
+                            <div class="responsive-table">
+                                <table border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;width:100%;">
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="3" class="year-header" style="background-color:#eef; font-weight:bold; text-align:left;">${year}</td>
+                                        </tr>
+                        `;
+                        groups[year].forEach(item => {
+                            tableHTML += `
+                                <tr>
+                                    <td data-label="Date" style="width: 120px; min-width: 120px;">${item.dateFormatted}</td>
+                                    <td data-label="Media" style="width: 150px;">${item.media}</td>
+                                    <td data-label="Title"><a href="${item.link}" target="_blank">${item.title}</a></td>
+                                </tr>
+                            `;
+                        });
+                        tableHTML += `</tbody></table></div>`;
+                        container.innerHTML += tableHTML;
+                    }
                 });
+
+                // If no data for requested year, show message
+                if (requestedYear && !groups[requestedYear]) {
+                    container.innerHTML = '<p>No data available for the requested year.</p>';
+                }
             } catch (error) {
                 console.error('Error fetching data:', error);
-                document.querySelector('#data-table tbody').innerHTML = '<tr><td colspan="3">Error loading data. Please check the Sheet ID and ensure the sheet is publicly accessible.</td></tr>';
+                document.getElementById('tables-container').innerHTML = '<p>Error loading data. Please check the Sheet ID and ensure the sheet is publicly accessible.</p>';
             }
         }
 
