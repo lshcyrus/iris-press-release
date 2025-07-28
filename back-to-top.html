@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Back to Top Button</title>
+    <style>
+        /* Reset styles for iframe embedding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: transparent;
+            font-family: 'Raleway', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Back to Top Button */
+        #back-to-top {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #12617f, #0f5169);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(18, 97, 127, 0.2);
+            transition: all 0.3s ease;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Raleway', sans-serif;
+        }
+
+        #back-to-top span:first-child {
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        #back-to-top .button-text {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        #back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(18, 97, 127, 0.3);
+            background: linear-gradient(135deg, #0f5169, #12617f);
+        }
+
+        #back-to-top:active {
+            transform: translateY(-1px);
+        }
+
+        /* Show button when it should be visible */
+        #back-to-top.show {
+            display: flex;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 768px) {
+            #back-to-top {
+                width: 50px;
+                height: 50px;
+                bottom: 15px;
+                right: 15px;
+            }
+
+            #back-to-top span:first-child {
+                font-size: 18px;
+            }
+
+            #back-to-top .button-text {
+                font-size: 9px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            #back-to-top {
+                width: 45px;
+                height: 45px;
+                bottom: 10px;
+                right: 10px;
+            }
+
+            #back-to-top span:first-child {
+                font-size: 16px;
+            }
+
+            #back-to-top .button-text {
+                font-size: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Back to Top Button -->
+    <button id="back-to-top" title="Back to Top">
+        <span>↑</span>
+        <span class="button-text">TOP</span>
+    </button>
+
+    <script>
+        // Back to Top functionality
+        const backToTopButton = document.getElementById('back-to-top');
+
+        function checkScroll() {
+            // Check if we're in an iframe
+            if (window.parent !== window) {
+                // We're in an iframe, listen for scroll messages from parent
+                window.addEventListener('message', function(event) {
+                    if (event.data && event.data.type === 'scroll') {
+                        if (event.data.scrollY > 100) {
+                            backToTopButton.classList.add('show');
+                        } else {
+                            backToTopButton.classList.remove('show');
+                        }
+                    }
+                });
+            } else {
+                // We're on the main page, use regular scroll listener
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 100) {
+                        backToTopButton.classList.add('show');
+                    } else {
+                        backToTopButton.classList.remove('show');
+                    }
+                });
+            }
+        }
+
+        backToTopButton.addEventListener('click', () => {
+            if (window.parent !== window) {
+                // We're in an iframe, send message to parent to scroll
+                window.parent.postMessage({
+                    type: 'scrollToTop'
+                }, '*');
+            } else {
+                // We're on the main page, scroll directly
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        // Initialize scroll checking
+        checkScroll();
+    </script>
+</body>
+</html> 

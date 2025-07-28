@@ -166,92 +166,6 @@
                 transform: translateY(0);
             }
         }
-
-        /* Back to Top Button */
-        #back-to-top {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #12617f, #0f5169);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(18, 97, 127, 0.2);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Raleway', sans-serif;
-        }
-
-        #back-to-top span:first-child {
-            font-size: 20px;
-            font-weight: bold;
-            line-height: 1;
-        }
-
-        #back-to-top .button-text {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-top: 2px;
-        }
-
-        #back-to-top:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(18, 97, 127, 0.3);
-            background: linear-gradient(135deg, #0f5169, #12617f);
-        }
-
-        #back-to-top:active {
-            transform: translateY(-1px);
-        }
-
-        /* Show button when it should be visible */
-        #back-to-top.show {
-            display: flex;
-        }
-
-        /* Responsive adjustments */
-        @media screen and (max-width: 768px) {
-            #back-to-top {
-                width: 50px;
-                height: 50px;
-                bottom: 15px;
-                right: 15px;
-            }
-
-            #back-to-top span:first-child {
-                font-size: 18px;
-            }
-
-            #back-to-top .button-text {
-                font-size: 9px;
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            #back-to-top {
-                width: 45px;
-                height: 45px;
-                bottom: 10px;
-                right: 10px;
-            }
-
-            #back-to-top span:first-child {
-                font-size: 16px;
-            }
-
-            #back-to-top .button-text {
-                font-size: 8px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -261,12 +175,6 @@
             <!-- Timeline items will be dynamically generated -->
         </div>
     </div>
-
-    <!-- Back to Top Button -->
-    <button id="back-to-top" title="Back to Top">
-        <span>↑</span>
-        <span class="button-text">TOP</span>
-    </button>
 
     <script>
         async function generateTimeline() {
@@ -369,21 +277,6 @@
 
         // Initialize timeline when page loads
         generateTimeline();
-
-        // Back to Top functionality
-        const backToTopButton = document.getElementById('back-to-top');
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 100) {
-                backToTopButton.classList.add('show');
-            } else {
-                backToTopButton.classList.remove('show');
-            }
-        });
-
-        backToTopButton.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
     </script>
 </body>
 </html> 
